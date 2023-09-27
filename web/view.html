@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background-color: black;
+            color: #aaffaa;
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+            margin-top: 0px;
+        }
+
+        table {
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        p {
+            font-size: 0.8em;
+            margin: 0.2em 0;
+            text-align: left;
+        }
+
+        #details {
+            margin: 30px auto 5px auto;
+        }
+
+        h3 {
+            text-align: center;
+        }
+
+        #myCanvas {
+            border: 1px solid #aaffaa;
+            background-color: black;
+            margin: 0;
+        }
+
+        #playPauseButton {
+            background-color: black;
+            color: #aaffaa;
+            border: 1px solid #aaffaa;
+            padding: 10px 20px 14px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0;
+            margin-top: 0px;
+            cursor: pointer;
+            transition: all 0.3s ease 0s;
+            width: 100%;
+            font-size: 2em;
+        }
+
+        #playPauseButton:hover {
+            background-color: #aaffaa;
+            color: black;
+            cursor: pointer;
+        }
+
+        @font-face {
+            font-family: 'Minecraftia';
+            src: url('./Minecraftia-Regular.ttf');
+        }
+
+        h1 {
+            font-size: 90px;
+            font-family: 'Minecraftia', sans-serif;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1><i>Rk Fall NFT</i></h1>
+    <div id="container" style="width: 800px; margin: 0 auto;">
+        <div style="width: 400px; margin: 0 auto;">
+            <canvas id="myCanvas" width="400" height="400">
+                Your browser does not support the HTML5 canvas tag.
+            </canvas>
+            <button id="playPauseButton">▶</button>
+        </div>
+        <div style="width: 600px; margin: 0 auto;"></div>
+        <div id="details" style="width: 600px;">
+            <p id="chainId"></p>
+            <p id="contractAddr"></p>
+            <p id="tokenId"></p>
+            <p id="ticks"></p>
+        </div>
+        <p id="initialState"></p>
+        <p id="currentState"></p>
+        <p id="finalState"></p>
+    </div>
+    </div>
+    <script type="module">
+        import { ethers } from "./ethers.min.js";
+        const cacheBuster = '?t=' + Date.now();
+        import init, { tick_wasm } from "./pkg/three_body.1695752567.js";
+        let animationId = null;
+        const colours = ["#4deeea", "#ffe700", "#f000ff", "#4deeea", "#ffe700", "#f000ff"];
+        const state = {
+            canvas: undefined,
+            ctx: undefined,
+            data: undefined,
+            trails: undefined,
+            systems: undefined,
+            frame: undefined
+        }
+        const precision = 100000000;
+
+        function formatSystem(system) {
+            let html = '<table style="width:100%; text-align:left;">';
+            html += '<tr><th></th><th>Mass</th><th>X</th><th>Y</th><th>Velocity X</th><th>Velocity Y</th></tr>';
+            system.forEach((body, index) => {
+                html += `<tr>`;
+                html += `<td><div style="background-color: ${colours[index]}; width: 15px; height: 15px; border-radius: 50%;"></div></td>`; // Added colored circle
+                html += `<td>${body.mass}</td>`;
+                html += `<td>${body.x}</td>`;
+                html += `<td>${body.y}</td>`;
+                html += `<td>${body.vel_x}</td>`;
+                html += `<td>${body.vel_y}</td>`;
+                html += `</tr>`;
+            });
+            html += '</table>';
+            return html;
+        }
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function drawGrid(ctx, canvas) {
+            const gridSpacing = 20; // Change this to adjust the spacing of the grid lines
+            ctx.strokeStyle = '#00ff00'; // Luminous green
+            ctx.lineWidth = 0.5;
+
+            // draw vertical lines
+            for (let x = 0; x <= canvas.width; x += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+
+            // draw horizontal lines
+            for (let y = 0; y <= canvas.height; y += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+
+        function draw(state) {
+            const { ctx, canvas, data, trails, systems, frame } = state;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGrid(ctx, canvas)
+
+            for (var i = 0; i < data.length; i++) {
+                var series = data[i];
+                if (frame < series.length) {
+                    var point = series[frame];
+                    ctx.beginPath();
+                    // draw a circle
+                    var radius = 5;
+                    var x = (point[0] * 100 / precision) + (canvas.height / 2);
+                    var y = (canvas.height / 2) - (point[1] * 100 / precision);
+                    console.log(x, y);
+                    ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+                    ctx.fillStyle = colours[i];
+                    ctx.fill();
+
+                    // draw a trail
+                    trails[i].push({ x, y });
+                    if (trails[i].length > 1) {
+                        ctx.beginPath();
+                        ctx.moveTo(trails[i][0].x, trails[i][0].y);
+                        for (var j = 1; j < trails[i].length; j++) {
+                            ctx.lineTo(trails[i][j].x, trails[i][j].y);
+                        }
+                        var rgb = hexToRgb(colours[i]);
+                        ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.7)`; // 40% opacity
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            document.getElementById('currentState').innerHTML = '<h3>Current System State:' + frame + '</h3>' + formatSystem(systems[frame]);
+        }
+
+        function drawContinuous(state) {
+            let { ctx, canvas, data, trails, systems, frame } = state;
+            draw(state)
+
+            frame = frame + 5;
+            state.frame = frame;
+            if (frame < data[0].length) {
+                setTimeout(function () {
+                    if (animationId !== null) {
+                        animationId = requestAnimationFrame(() => drawContinuous(state));
+                    }
+                }, 5)
+            } else {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+                document.getElementById('playPauseButton').innerText = '▶';
+            }
+        }
+
+        async function drawSystem(ticks, initialSystem) {
+            await init();
+
+            const canvas = document.getElementById("myCanvas");
+            const ctx = canvas.getContext("2d");
+
+            let system = initialSystem;
+            let data = [];
+            let trails = [];
+            for (let i = 0; i < initialSystem.length; i++) {
+                data[i] = []
+                data[i][0] = [initialSystem[i]["x"], initialSystem[i]["y"]];
+            }
+            let then = Date.now();
+            let systems = [system];
+            for (let tick = 1; tick < ticks + 1; tick++) {
+                const time_period_sec = BigInt(0.001 * precision);
+                const result = tick_wasm(time_period_sec, system);
+                for (let i = 0; i < initialSystem.length; i++) {
+                    data[i][tick] = [result[i]["x"], result[i]["y"]];
+                }
+                systems.push(result)
+                system = result;
+            }
+
+            console.log(system);
+
+            state.data = data;
+            state.canvas = canvas;
+            state.trails = data.map(() => []);
+            state.systems = systems;
+            state.frame = 0;
+            state.ctx = ctx;
+
+            drawContinuous(state);
+        }
+
+        window.addEventListener('load', async () => {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const providerUrl = urlParams.get('provider');
+
+
+                if (!providerUrl) {
+                    throw new Error('No provider URL detected in parameters. Please add a "provider" parameter to the URL.');
+                }
+                let provider = new ethers.JsonRpcProvider(providerUrl);
+
+                // CHRIS: TODO: remove
+                let network = await provider.getNetwork();
+                document.getElementById('chainId').innerText = 'Connected to chain ID: ' + network.chainId;
+
+                let params = new URLSearchParams(window.location.search);
+
+                let address = params.get('address');
+                if (!address) {
+                    throw new Error('Address not found in URL parameters.');
+                    return;
+                }
+                document.getElementById('contractAddr').innerText = 'Contract address: ' + address;
+
+                let tokenId = params.get('tokenId');
+                if (!tokenId) {
+                    throw new Error('Token ID not found in URL parameters.');
+                    return;
+                }
+                document.getElementById('tokenId').innerText = 'Token ID: ' + tokenId;
+
+                const iFace = new ethers.Interface(["event RkFallMint(uint256 indexed tokenId,uint32 ticks,uint64[] mass,int64[] init_x,int64[] init_y,int64[] init_vel_x,int64[] init_vel_y,int64[] final_x,int64[] final_y,int64[] final_vel_x,int64[] final_vel_y)"])
+                const rkFallMintTopic = iFace.getEvent("RkFallMint").topicHash;
+                let filter = {
+                    address: address,
+                    topics: [rkFallMintTopic, tokenId],
+                    fromBlock: 0,
+                    toBlock: "latest"
+                }
+
+                let result = await provider.getLogs(filter);
+                if (result.length !== 1) {
+                    throw new Error("Unexpected number of logs", result)
+                }
+                let initialSystem = [];
+                let finalSystem = [];
+                let parsedLog = iFace.parseLog(result[0]);
+                let args = parsedLog.args;
+                let ticks = Number(args.ticks)
+                for (let i = 0; i < args.mass.length; i++) {
+                    initialSystem.push({
+                        mass: Number(args.mass[i]),
+                        x: Number(args.init_x[i]),
+                        y: Number(args.init_y[i]),
+                        vel_x: Number(args.init_vel_x[i]),
+                        vel_y: Number(args.init_vel_y[i])
+                    });
+                }
+                for (let i = 0; i < args.mass.length; i++) {
+                    finalSystem.push({
+                        mass: Number(args.mass[i]),
+                        x: Number(args.final_x[i]),
+                        y: Number(args.final_y[i]),
+                        vel_x: Number(args.final_vel_x[i]),
+                        vel_y: Number(args.final_vel_y[i])
+                    });
+
+                    console.log(finalSystem)
+                }
+
+                document.getElementById('ticks').innerHTML = 'Total ticks: ' + ticks;
+                document.getElementById('initialState').innerHTML = '<h3>Initial System State:' + 0 + '</h3>' + formatSystem(initialSystem);
+                document.getElementById('finalState').innerHTML = '<h3>Final System State:' + ticks + '</h3>' + formatSystem(finalSystem);
+                document.getElementById('playPauseButton').addEventListener('click', function () {
+                    const button = document.getElementById('playPauseButton');
+                    if (animationId) {
+                        // Animation is currently running, so pause it
+                        cancelAnimationFrame(animationId);
+                        animationId = null;
+                        button.innerText = '▶'; // Change button text to 'Pause'
+                    } else {
+                        // Animation is currently paused, so start it
+                        if (state.frame >= state.data[0].length) {
+                            // If the animation has completed, reset the frame to 0
+                            state.frame = 0;
+                            state.trails = state.data.map(() => []);
+                        }
+                        // Animation is currently paused, so start it
+                        animationId = requestAnimationFrame(() => drawContinuous(state));
+                        button.innerText = '❚❚'; // Change button text to 'Play'
+
+                    }
+                });
+
+                await drawSystem(ticks, initialSystem)
+            }
+            catch (err) {
+                console.error(err)
+            }
+        });
+
+
+    </script>
+</body>
+
+</html>

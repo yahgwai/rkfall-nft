@@ -1,0 +1,37 @@
+[package]
+name = "three_body"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+stylus-sdk = "0.4.1"
+wee_alloc = "0.4.5"
+alloy-primitives = "^0.3.0"
+alloy-sol-types = "^0.3.0"
+plotters = "0.3.5"
+image = "0.24.7"
+gif = "0.12.0"
+fixed = "1.6.3"
+fixed-sqrt = "0.2.5"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+wasm-bindgen = "0.2.87"
+serde-wasm-bindgen = "0.6.0"
+web-sys = { version = "0.3.4", features = ['console'] }
+
+
+[features]
+export-abi = ["stylus-sdk/export-abi"]
+
+[profile.release]
+codegen-units = 1
+strip = true
+lto = true
+panic = "abort"
+opt-level = "s"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+
+[workspace]

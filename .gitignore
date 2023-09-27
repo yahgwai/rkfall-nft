@@ -1,0 +1,6 @@
+/target
+priv_key_file
+/node_modules
+questions.txt
+.envrc
+.vscode
