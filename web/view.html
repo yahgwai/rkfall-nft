@@ -97,7 +97,7 @@
     <script type="module">
         import { ethers } from "./ethers.min.js";
         const cacheBuster = '?t=' + Date.now();
-        import init, { tick_wasm } from "./pkg/rk_fall.1695752567.js";
+        import init, { tick_wasm } from "./pkg/rk_fall.1695826460.js";
         let animationId = null;
         const colours = ["#4deeea", "#ffe700", "#f000ff", "#4deeea", "#ffe700", "#f000ff"];
         const state = {
@@ -116,11 +116,11 @@
             system.forEach((body, index) => {
                 html += `<tr>`;
                 html += `<td><div style="background-color: ${colours[index]}; width: 15px; height: 15px; border-radius: 50%;"></div></td>`; // Added colored circle
-                html += `<td>${body.mass}</td>`;
-                html += `<td>${body.x}</td>`;
-                html += `<td>${body.y}</td>`;
-                html += `<td>${body.vel_x}</td>`;
-                html += `<td>${body.vel_y}</td>`;
+                html += `<td>${(body.mass / precision).toFixed(8)}</td>`;
+                html += `<td>${(body.x / precision).toFixed(8)}</td>`;
+                html += `<td>${(body.y / precision).toFixed(8)}</td>`;
+                html += `<td>${(body.vel_x / precision).toFixed(8)}</td>`;
+                html += `<td>${(body.vel_y / precision).toFixed(8)}</td>`;
                 html += `</tr>`;
             });
             html += '</table>';

@@ -9,12 +9,12 @@
 # ticks=1000
 
 # our separate ways
-# mass=(100000000 100000001 100000002)
-# x=(0 -100000000 100000000)
-# y=(100000000 -100000000 -100000000)
-# vel_x=(30000000 0 -30000000)
-# vel_y=(0 30000000 0)
-# ticks=4000
+mass=(100000000 100000001 100000002)
+x=(0 -100000000 100000000)
+y=(100000000 -100000000 -100000000)
+vel_x=(30000000 0 -30000000)
+vel_y=(0 30000000 0)
+ticks=4000
 
 # slow dance
 # mass=(100000000 100000001 100000002)
@@ -33,12 +33,12 @@
 # ticks=4000
 
 # double orbit
-mass=(40000 40001)
-x=(0 0)
-y=(10000 -10000)
-vel_x=(10000 -10000)
-vel_y=(0 0)
-ticks=4000
+# mass=(40000 40001)
+# x=(0 0)
+# y=(10000 -10000)
+# vel_x=(10000 -10000)
+# vel_y=(0 0)
+# ticks=4000
 
 address=$1
 
@@ -48,7 +48,7 @@ y_string="["$(IFS=, ; echo "${y[*]}")"]"
 vel_x_string="["$(IFS=, ; echo "${vel_x[*]}")"]"
 vel_y_string="["$(IFS=, ; echo "${vel_y[*]}")"]"
 
-cast send --gas-limit 30000000 --private-key $PRIV_KEY --rpc-url $RPC_URL $address "mint(uint64[],int64[],int64[],int64[],int64[],uint32)" $mass_string $x_string $y_string $vel_x_string $vel_y_string $ticks
+cast send --gas-limit 12000000 --private-key $PRIV_KEY --rpc-url $RPC_URL $address "mint(uint64[],int64[],int64[],int64[],int64[],uint32)" $mass_string $x_string $y_string $vel_x_string $vel_y_string $ticks
 
 # some possible errors
 # 0x7e273289 ERC721NonexistentToken(uint256 tokenId);
