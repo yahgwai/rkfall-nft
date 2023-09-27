@@ -1255,6 +1255,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dbb5fb1acd8a1a18b3dd5be62d25485eb770e05afb408a9627d14d451bae12da"
 
 [[package]]
+name = "rk_fall"
+version = "0.1.0"
+dependencies = [
+ "alloy-primitives",
+ "alloy-sol-types",
+ "fixed",
+ "fixed-sqrt",
+ "gif",
+ "image",
+ "plotters",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "stylus-sdk",
+ "wasm-bindgen",
+ "web-sys",
+ "wee_alloc",
+]
+
+[[package]]
 name = "ruint"
 version = "1.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1545,26 +1565,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.32",
-]
-
-[[package]]
-name = "three_body"
-version = "0.1.0"
-dependencies = [
- "alloy-primitives",
- "alloy-sol-types",
- "fixed",
- "fixed-sqrt",
- "gif",
- "image",
- "plotters",
- "serde",
- "serde-wasm-bindgen",
- "serde_json",
- "stylus-sdk",
- "wasm-bindgen",
- "web-sys",
- "wee_alloc",
 ]
 
 [[package]]

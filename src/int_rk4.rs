@@ -11,6 +11,10 @@ pub struct MotionState {
 }
 
 impl MotionState {
+    pub fn get_mass(&self) -> u64 {
+        self.mass
+    }
+
     pub fn get_x(&self) -> i64 {
         self.x
     }
@@ -97,7 +101,7 @@ fn sqrt_heron(x: i64) -> i64 {
 pub const PRECISION: i64 = 100000000;
 
 pub fn gravitational_acceleration(grav_g: i64, mass: u64, d: i64, r: i64) -> i64 {
-    (((((-grav_g * mass as i64 * d) * PRECISION) / r) * PRECISION) / r) / r
+    ((((-grav_g * mass as i64 * d / r) * PRECISION) / r) * PRECISION) / r
 }
 
 pub fn grav_rate_func(state: &MotionState, system: &Vec<MotionState>) -> MotionState {

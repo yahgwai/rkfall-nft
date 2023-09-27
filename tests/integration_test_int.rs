@@ -1,10 +1,9 @@
 #[cfg(test)]
 mod tests {
     const PRECISION_FLOAT: f64 = PRECISION as f64;
-    use std::{fs::File, io::Write};
 
     use plotters::{prelude::*, style::full_palette::ORANGE};
-    use three_body::int_rk4::{tick, tick_many, MotionState, PRECISION};
+    use rk_fall::int_rk4::{tick, MotionState, PRECISION};
 
     pub fn get_orbit_data(
         initial_states: Vec<MotionState>,
@@ -49,8 +48,6 @@ mod tests {
                 .map(|i| i.get_vel_y())
                 .collect::<Vec<_>>()
         );
-        // let final_state = tick_many(4000, 10, &initial_states.clone());
-        // println!("{:?}", final_state);
 
         for _ in 0..time_periods {
             states = tick(time_period_sec, &states);
@@ -147,7 +144,7 @@ mod tests {
         vec![state0, state1]
     }
 
-    fn our_seperate_ways() -> Vec<MotionState> {
+    fn our_separate_ways() -> Vec<MotionState> {
         let state0 = MotionState::new(
             (1.0 * PRECISION_FLOAT) as u64,
             (0.0 * PRECISION_FLOAT) as i64,
@@ -186,7 +183,7 @@ mod tests {
 
         chart.configure_mesh().draw().unwrap();
 
-        let colours = vec![RED, BLUE, GREEN, ORANGE];
+        let colors = vec![RED, BLUE, GREEN, ORANGE];
 
         for (i, series) in data.iter().enumerate() {
             chart
@@ -194,7 +191,7 @@ mod tests {
                     Circle::new(
                         (x / PRECISION_FLOAT, y / PRECISION_FLOAT),
                         1,
-                        colours[i].filled(),
+                        colors[i].filled(),
                     )
                 }))
                 .unwrap();
@@ -221,7 +218,7 @@ mod tests {
     fn test_our_separate_ways() {
         draw_chart(
             "./test_plots/our_separate_ways.png",
-            get_orbit_data(our_seperate_ways(), 4000),
+            get_orbit_data(our_separate_ways(), 4000),
         );
     }
 

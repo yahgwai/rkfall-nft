@@ -1,4 +1,4 @@
-#![cfg_attr(not(feature = "export-abi"), no_main, no_std)]
+#![cfg_attr(all(not(feature = "export-abi")), no_main, no_std)]
 extern crate alloc;
 
 #[global_allocator]
@@ -162,4 +162,4 @@ impl RkFall {
 //     Ok(ser)
 // }
 
-// fn main() {}
+
