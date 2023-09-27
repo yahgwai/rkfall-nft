@@ -8,7 +8,7 @@ The NFTs, written using the [rust-stylus-sdk](https://github.com/OffchainLabs/st
 
 The project also includes a web interface for viewing the trajectories which executes the same rk4 code natively in browser.
 
-:warning: **Warning**: This smart contract code is a demo and a WIP. It is not for production use and has not been audited. Use at your own risk.
+:warning: **Warning**: This smart contract code is a demo and a WIP. It has not being audited and is not for production use.
 
 <p align="center">
   <img src="./docs/full-web-page.png" alt="An image of the rk fall interface showing bodies in motion" />
