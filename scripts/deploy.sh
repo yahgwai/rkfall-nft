@@ -1,0 +1,1 @@
+cargo stylus deploy --private-key $PRIV_KEY
