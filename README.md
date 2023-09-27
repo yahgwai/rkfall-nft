@@ -33,5 +33,14 @@ The project is an exploration of how to write a simple NFT project in rust that 
 In the general case, the motion of more than two bodies interacting gravitationally does [not have a known analytical solution](https://en.wikipedia.org/wiki/N-body_problem). However, the motion of the bodies can be estimated using numerical methods, such as [Runge-Kutta](https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods).
 See also, [this python project](https://github.com/kirklong/ThreeBodyBot) which has an excellent background and description of the problem.
 
-## Setup and tests
+### Dependencies
+* [Cargo stylus CLI](https://github.com/OffchainLabs/cargo-stylus)
+
+### Tests
+Run `./scripts/test.sh` to run the tests. This will update the plots in `./test_plots`, so you can try deleting them and see that they get recreated.
+
+### Deployment
+
+
+
 
