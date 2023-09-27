@@ -11,7 +11,7 @@ The project also includes a web interface for viewing the trajectories which exe
 :warning: **Warning**: This smart contract code is a demo and a WIP. It is not for production use and has not been audited. Use at your own risk.
 
 <p align="center">
-  <img src="./docs/our-separate-ways.png" alt="An image of the rk fall interface showing bodies in motion" />
+  <img src="./docs/full-web-page.png" alt="An image of the rk fall interface showing bodies in motion" />
 </p>
 
 ### Features:
