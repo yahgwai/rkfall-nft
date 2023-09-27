@@ -41,7 +41,7 @@ See also, [this python project](https://github.com/kirklong/ThreeBodyBot) which 
 Run `./scripts/test.sh` to run the tests. This will update the plots in `./test_plots`, so you can try deleting them and see that they get recreated.
 
 ## Deployment
-Set a private key environment variable
+Set a private key environment variable. Ensure that you have ETH on the key to pay for gas fees.
 ```sh
 PRIV_KEY=<private key>
 ```
