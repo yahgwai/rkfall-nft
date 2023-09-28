@@ -1,0 +1,14 @@
+{
+  "name": "rk_fall",
+  "version": "0.1.0",
+  "files": [
+    "rk_fall_bg.wasm",
+    "rk_fall.js",
+    "rk_fall.d.ts"
+  ],
+  "module": "rk_fall.js",
+  "types": "rk_fall.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
