@@ -171,7 +171,6 @@
                     var radius = 5;
                     var x = (point[0] * 100 / precision) + (canvas.height / 2);
                     var y = (canvas.height / 2) - (point[1] * 100 / precision);
-                    console.log(x, y);
                     ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
                     ctx.fillStyle = colours[i];
                     ctx.fill();
@@ -238,8 +237,6 @@
                 systems.push(result)
                 system = result;
             }
-
-            console.log(system);
 
             state.data = data;
             state.canvas = canvas;
@@ -317,8 +314,6 @@
                         vel_x: Number(args.final_vel_x[i]),
                         vel_y: Number(args.final_vel_y[i])
                     });
-
-                    console.log(finalSystem)
                 }
 
                 document.getElementById('ticks').innerHTML = 'Total ticks: ' + ticks;

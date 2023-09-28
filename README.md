@@ -74,14 +74,9 @@ To find it, do the following:
 3. Look for the `topics` field in that second object, this field is also an array value
 4. Copy the second value in the array, it should be a 32 byte hex string. Eg. `0x6a0273c89568ef8414db17fd525e0e8d9f22ba2bf6dfc9230d335d3457382a6c`
 
-
 ## Running the web app
 The web app allows you to visualise the NFT trajectories that were calculated on chain. It runs some of exact same code that is executed in the smart contract, but instead runs it in the browser. To begin you need to build the wasm bindings for the rk4 code.
-```
-./scripts/publish-wasm.sh
-```
-
-Next you can start a local server using miniserve
+First start a local web serve:
 ```
 cargo install miniserve
 miniserve web
@@ -99,4 +94,10 @@ http://localhost:8080/view.html?provider=<rpc-url>&address=<contract-address>&to
 Example filled in URL:
 ```
 http://localhost:8080/view.html?provider=https://stylus-testnet.arbitrum.io/rpc&address=0x6f887fcfaf58ba5ebb7e0daf6bed3b16cb31ba42&tokenId=0x6a0273c89568ef8414db17fd525e0e8d9f22ba2bf6dfc9230d335d3457382a6c
+```
+
+### Updating the web wasm
+If you make changes to any of the rust code that will run in the browser you will need to rebuild it using
+```
+./scripts/publish-wasm.sh
 ```
