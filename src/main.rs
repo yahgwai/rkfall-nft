@@ -11,8 +11,9 @@ use crate::int_rk4::{tick_many, MotionState};
 use crate::erc721::{Erc721, Erc721Params};
 use alloc::vec::Vec;
 use alloy_primitives::keccak256;
-use erc721::Erc721Error;
+use erc721::IErc721Errors;
 use int_rk4::PRECISION;
+use stylus_sdk::abi::AbiType;
 use stylus_sdk::stylus_proc::{entrypoint, external, sol_storage};
 use stylus_sdk::{
     alloy_primitives::U256,
@@ -53,12 +54,12 @@ impl From<RkFallError> for Vec<u8> {
 }
 
 pub enum CombinedError {
-    Erc721Error(Erc721Error),
+    IErc721Errors(IErc721Errors),
     DynDanceError(RkFallError),
 }
-impl From<Erc721Error> for CombinedError {
-    fn from(err: Erc721Error) -> Self {
-        CombinedError::Erc721Error(err)
+impl From<IErc721Errors> for CombinedError {
+    fn from(err: IErc721Errors) -> Self {
+        CombinedError::IErc721Errors(err)
     }
 }
 
@@ -71,17 +72,46 @@ impl From<CombinedError> for Vec<u8> {
     fn from(err: CombinedError) -> Vec<u8> {
         match err {
             CombinedError::DynDanceError(e) => RkFallError::into(e),
-            CombinedError::Erc721Error(e) => Erc721Error::into(e),
+            CombinedError::IErc721Errors(e) => IErc721Errors::into(e),
         }
     }
 }
 
 type CombinedResult<T> = Result<T, CombinedError>;
 
+sol! {
+    struct MintParams {
+        uint64[] mass;
+        int64[] x;
+        int64[] y;
+        int64[] vel_x;
+        int64[] vel_y;
+        uint32 ticks;
+    }
+}
+
+impl AbiType for MintParams {
+    type SolType = MintParams;
+
+    // NB: this is the tuple-equivalent of the struct
+    const ABI: stylus_sdk::abi::ConstString =
+        stylus_sdk::abi::ConstString::new("(uint64[],int64[],int64[],int64[],int64[],uint32)");
+}
+
 #[external]
 #[inherit(Erc721<RkFallParams>)]
 impl RkFall {
-    // CHRIS: TODO: how to have a struct as an argument?
+    pub fn mint_with_params(&mut self, mint_params: MintParams) -> CombinedResult<U256> {
+        self.mint(
+            mint_params.mass,
+            mint_params.x,
+            mint_params.y,
+            mint_params.vel_x,
+            mint_params.vel_y,
+            mint_params.ticks,
+        )
+    }
+
     pub fn mint(
         &mut self,
         mass: Vec<u64>,
@@ -161,5 +191,3 @@ impl RkFall {
 // fn user_main(input: Vec<u8>) -> Result<Vec<u8>, Vec<u8>> {
 //     Ok(ser)
 // }
-
-
